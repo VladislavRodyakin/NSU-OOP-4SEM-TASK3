@@ -1,18 +1,15 @@
-
 #include "dijkstra.hpp"
-
-
 
 void Graph::insert(const std::string& name1, const std::string& name2, int val) {
 
-    //проверяем есть дорога от name1 до name2
-    if(graph[name1].count(name2)) {
+    //checking whether there is a path from name1 to name2
+    if(m_graph[name1].count(name2)) {
         std::string problem = "From " + name1 + " to " + name2 + " path already exists";
         throw GraphError(problem);
     }
-    //заполняем несимметричным образом
-    graph[name1][name2] = val;
-    graph[name2];
+    //asymmetric filling
+    m_graph[name1][name2] = val;
+    m_graph[name2];
 }
 
 void read(Graph& G, std::istream& is_)
@@ -33,15 +30,12 @@ void read(Graph& G, std::istream& is_)
     }
 }
 
-
-
-
-
 void Dijkstra::route(const Graph &g, const std::string &start) {
-    Start = start;
-    if(!distances.empty()) {
-        distances.clear();
-        prev.clear();
+    m_start = start;
+    const int Inf = std::numeric_limits<int>::max();
+    if(!m_distances.empty()) {
+        m_distances.clear();
+        m_prev.clear();
     }
    auto& graph = g.getStorage();
 
@@ -52,17 +46,18 @@ void Dijkstra::route(const Graph &g, const std::string &start) {
         return;
     }
     for(const auto& pair : graph) {
-        distances.insert({pair.first, Inf});
+        m_distances.insert({pair.first, Inf});
     }
-    distances[start] = 0;
+    m_distances[start] = 0;
     std::priority_queue <std::pair <int, std::string>> queue;
     queue.push(make_pair(0,start));
     while (!queue.empty()) {
-        //в очереди элементы по убыванию, значит сортируем отрицательные числа
+        //queue holds elements in descending order
+        //so we're sorting negative numbers
         int len = -queue.top().first;
         std::string v = queue.top().second;
         queue.pop();
-        if (len > distances[v]) {
+        if (len > m_distances[v]) {
             continue;
         }
 
@@ -70,27 +65,33 @@ void Dijkstra::route(const Graph &g, const std::string &start) {
         for(const auto& city_roads : v_it->second) {
             int length = city_roads.second;
             std::string to = city_roads.first;
-            if((distances[to] > distances[v] + length) && length > 0) {
-                distances[to] = distances[v] + length;
-                prev[to] = v;
-                queue.push(make_pair(-distances[to],to));
+            if((m_distances[to] > m_distances[v] + length) && length > 0) {
+                m_distances[to] = m_distances[v] + length;
+                m_prev[to] = v;
+                queue.push(make_pair(-m_distances[to],to));
             }
         }
     }
 }
 
- std::vector<std:: string> Dijkstra::getWay(const std::string &finish) const {
-    auto connection  = prev.find(finish);
-    std::vector <std:: string> Way;
-    if(connection == prev.end()) {
+int Dijkstra::getKilometres(const std::string &finish){
+    if(m_distances.count(finish)!=0) {
+        return m_distances[finish];
+    }
+    return 0;
+}
+
+ std::vector<std::string> Dijkstra::getWay(const std::string &finish) const {
+    auto connection = m_prev.find(finish);
+    std::vector<std::string> Way;
+    if(connection == m_prev.end()) {
         return Way;
     }
-    Way.push_back(Start);
-    while(connection->second != Start) {
+    Way.push_back(m_start);
+    while(connection->second != m_start) {
         Way.push_back(connection->second);
-        connection = prev.find(connection->second);
+        connection = m_prev.find(connection->second);
     }
     Way.push_back(finish);
     return Way;
-
 }
