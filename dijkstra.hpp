@@ -1,9 +1,11 @@
+#pragma once
 #include <iostream>
 #include <vector>
 #include <sstream>
 #include <queue>
 #include <map>
 #include <algorithm>
+
 
 class Graph {
 public:
@@ -19,6 +21,8 @@ public:
 private:
     std::map<std::string, std::map<std::string, int>> m_graph; // unordered maps
 };
+
+void read_into_graph(Graph& G, std::istream & is_);
 
 class Dijkstra {
 public:

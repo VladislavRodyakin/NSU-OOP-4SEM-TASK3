@@ -1,3 +1,4 @@
+#include <limits>
 #include "dijkstra.hpp"
 
 void Graph::insert(const std::string& name1, const std::string& name2, int val) {
@@ -12,7 +13,7 @@ void Graph::insert(const std::string& name1, const std::string& name2, int val) 
     m_graph[name2];
 }
 
-void read(Graph& G, std::istream& is_)
+void read_into_graph(Graph& G, std::istream& is_)
 {
     std::string line;
     while (std::getline(is_, line)) {

@@ -1,5 +1,4 @@
-
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <map>
 #include "dijkstra.hpp"
 
@@ -40,7 +39,7 @@ TEST(Reading,NoErrors) {
         { "Novosibirsk", {} },{ "Krasnoyarsk", {} }, { "Kiev", {} } };
 
     Graph graph;
-    read(graph, inp);
+    read_into_graph(graph, inp);
     map <string, map <string, int>> graph = graph.getStorage();
     ASSERT_TRUE (graphCheck == graph);
 }
@@ -58,7 +57,7 @@ TEST(Reading,EmptyLines)  {
                                                                      {"Kiev", 9}} },
                                                    { "Novosibirsk", {} },{ "Krasnoyarsk", {} }, { "Kiev", {} } };
     Graph graph;
-    read(graph, inp);
+    read_into_graph(graph, inp);
     map <string, map <string, int>> graph = graph.getStorage();
     ASSERT_TRUE (graphCheck == graph);
 }
@@ -68,20 +67,20 @@ TEST(Reading,InvalidLines)  {
     stringstream inp {"Moscow Novosibirsk 7\n"
                       "  \n"};
     Graph graph;
-    ASSERT_THROW(read(graph, inp),GraphError);
+    ASSERT_THROW(read_into_graph(graph, inp),GraphError);
 
     stringstream inp2 {" 8 Moscow Novosibirsk 7"};
-    ASSERT_THROW(read(graph, inp2),GraphError);
+    ASSERT_THROW(read_into_graph(graph, inp2),GraphError);
 
     stringstream inp3 {"Moscow - Novosibirsk 7"};
-    ASSERT_THROW(read(graph, inp3),GraphError);
+    ASSERT_THROW(read_into_graph(graph, inp3),GraphError);
 }
 TEST (Reading, RepeatedLines) {
     stringstream inp {"Moscow Novosibirsk 7\n"
                       "Moscow Krasnoyarsk 2\n"
                       "Moscow Novosibirsk 9"};
     Graph graph;
-    ASSERT_THROW(read(graph, inp),GraphError);
+    ASSERT_THROW(read_into_graph(graph, inp),GraphError);
 }
 TEST(Dijkstra, NoErrors) {
     map <string, map <string, int>> graph = { {"Moscow",{
@@ -136,7 +135,7 @@ TEST(DijkAndReading, NoErrors) {
 
     Graph graph;
     Dijkstra D;
-    read(graph, inp);
+    read_into_graph(graph, inp);
     D.route(graph, "Moscow");
     ASSERT_EQ(D.getKilometres("Novosibirsk"), 7);
     ASSERT_EQ(D.getKilometres("Krasnoyarsk"), 9);
@@ -151,7 +150,7 @@ TEST(DijkAndReading, NoWay) {
                       "Moscow Krasnoyarsk 150"};
     Graph graph;
     Dijkstra D;
-    read(graph,inp);
+    read_into_graph(graph,inp);
     D.route(graph, "Monako");
     ASSERT_EQ(0, D.getKilometres("Moscow"));
     D.route(graph,"Moscow");
@@ -169,7 +168,7 @@ TEST(DijkAndReading, GetWay) {
                         "Krasnoyarsk Kiev 9\n"
                         "Kiev Omsk  6"};
     Graph graph;
-    read(graph,inp);
+    read_into_graph(graph,inp);
     Dijkstra D;
 
     D.route(graph, "Novosibirsk");
@@ -200,7 +199,7 @@ TEST(DijkAndReading, GetWayErrors) {
                       "Krasnoyarsk Kiev 9\n"
                       "Kiev Omsk  6"};
     Graph graph;
-    read(graph,inp);
+    read_into_graph(graph,inp);
     Dijkstra D;
     D.route(graph, "Novosibirsk");
     vector <string> way = D.getWay("Moscow");
