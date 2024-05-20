@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <map>
 #include "dijkstra.hpp"
-
+#include "utils.hpp"
 using namespace std;
 
 TEST(Insert, NoErrors) {
@@ -40,8 +40,8 @@ TEST(Reading,NoErrors) {
 
     Graph graph;
     read_into_graph(graph, inp);
-    map <string, map <string, int>> graph = graph.getStorage();
-    ASSERT_TRUE (graphCheck == graph);
+    map <string, map <string, int>> graph_storage = graph.getStorage();
+    ASSERT_TRUE (graphCheck == graph_storage);
 }
 TEST(Reading,EmptyLines)  {
     stringstream inp {"Moscow Novosibirsk 7\n"
@@ -58,8 +58,8 @@ TEST(Reading,EmptyLines)  {
                                                    { "Novosibirsk", {} },{ "Krasnoyarsk", {} }, { "Kiev", {} } };
     Graph graph;
     read_into_graph(graph, inp);
-    map <string, map <string, int>> graph = graph.getStorage();
-    ASSERT_TRUE (graphCheck == graph);
+    map <string, map <string, int>> graph_storage = graph.getStorage();
+    ASSERT_TRUE (graphCheck == graph_storage);
 }
 
 

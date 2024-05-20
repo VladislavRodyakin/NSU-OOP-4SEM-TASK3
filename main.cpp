@@ -10,7 +10,7 @@ int main(int argc, char*argv []) {
         path = "input.txt";
     }
     else {
-        path = argv[2];
+        path = argv[1];
     }
 
     ifstream inp(path);
