@@ -13,24 +13,6 @@ void Graph::insert(const std::string& name1, const std::string& name2, int val) 
     m_graph[name2];
 }
 
-void read_into_graph(Graph& G, std::istream& is_)
-{
-    std::string line;
-    while (std::getline(is_, line)) {
-        if (line.empty())
-            continue;
-        std::string name1, name2;
-        int val;
-        std::istringstream is(line);
-        if (is >> name1 >> name2 >> val) {
-            G.insert(name1, name2, val);
-        }
-        else {
-            throw GraphError("Invalid line format:" + line);
-        }
-    }
-}
-
 void Dijkstra::route(const Graph &g, const std::string &start) {
     m_start = start;
     const int Inf = std::numeric_limits<int>::max();

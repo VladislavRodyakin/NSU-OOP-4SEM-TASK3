@@ -10,7 +10,7 @@ TEST(Insert, NoErrors) {
     graph.insert("Moscow", "Novosibirsk", 15);
     graph.insert("Novosibirsk", "Toronto", 20);
     graph.insert("Kiev", "Toronto", 30);
-    map <string, map <string, int>> check = graph.getStorage();
+    unordered_map<string, unordered_map<string, int>> check = graph.getStorage();
     ASSERT_TRUE(check["Kiev"]["Toronto"] == 30);
     ASSERT_TRUE(check["Moscow"]["Toronto"] == 10);
     ASSERT_TRUE(check["Novosibirsk"]["Toronto"] == 20);
@@ -24,7 +24,7 @@ TEST(Insert, RepeatedPath) {
     ASSERT_THROW(graph.insert("Moscow", "Toronto", 20),GraphError );
     graph.insert("Novosibirsk", "Kiev", 15);
     ASSERT_THROW(graph.insert("Moscow", "Novosibirsk", 20),GraphError );
-    map <string, map <string, int>> check = graph.getStorage();
+    unordered_map<string, unordered_map<string, int>> check = graph.getStorage();
     ASSERT_TRUE(check["Novosibirsk"]["Kiev"] == 15);
 }
 
@@ -32,15 +32,15 @@ TEST(Reading,NoErrors) {
     stringstream inp {"Moscow Novosibirsk 7\n"
                       "Moscow Krasnoyarsk 2\n"
                       "Moscow Kiev 9"};
-    map <string, map <string, int>> graphCheck = { {"Moscow",{
+    unordered_map<string, unordered_map<string, int>> graphCheck = { {"Moscow",{
         {"Novosibirsk", 7},
         {"Krasnoyarsk", 2},
         {"Kiev", 9} } },
         { "Novosibirsk", {} },{ "Krasnoyarsk", {} }, { "Kiev", {} } };
 
     Graph graph;
-    read_into_graph(graph, inp);
-    map <string, map <string, int>> graph_storage = graph.getStorage();
+    Dj_utils::read_into_graph(graph, inp);
+    unordered_map<string, unordered_map<string, int>> graph_storage = graph.getStorage();
     ASSERT_TRUE (graphCheck == graph_storage);
 }
 TEST(Reading,EmptyLines)  {
@@ -51,14 +51,14 @@ TEST(Reading,EmptyLines)  {
                       "\n"
                       "Moscow Kiev 9"
                       };
-    map <string, map <string, int>> graphCheck = { {"Moscow",{
+    unordered_map<string, unordered_map<string, int>> graphCheck = { {"Moscow",{
                                                                      {"Novosibirsk", 7},
                                                                      {"Krasnoyarsk", 2},
                                                                      {"Kiev", 9}} },
                                                    { "Novosibirsk", {} },{ "Krasnoyarsk", {} }, { "Kiev", {} } };
     Graph graph;
-    read_into_graph(graph, inp);
-    map <string, map <string, int>> graph_storage = graph.getStorage();
+    Dj_utils::read_into_graph(graph, inp);
+    unordered_map<string, unordered_map<string, int>> graph_storage = graph.getStorage();
     ASSERT_TRUE (graphCheck == graph_storage);
 }
 
@@ -67,23 +67,23 @@ TEST(Reading,InvalidLines)  {
     stringstream inp {"Moscow Novosibirsk 7\n"
                       "  \n"};
     Graph graph;
-    ASSERT_THROW(read_into_graph(graph, inp),GraphError);
+    ASSERT_THROW(Dj_utils::read_into_graph(graph, inp),GraphError);
 
     stringstream inp2 {" 8 Moscow Novosibirsk 7"};
-    ASSERT_THROW(read_into_graph(graph, inp2),GraphError);
+    ASSERT_THROW(Dj_utils::read_into_graph(graph, inp2),GraphError);
 
     stringstream inp3 {"Moscow - Novosibirsk 7"};
-    ASSERT_THROW(read_into_graph(graph, inp3),GraphError);
+    ASSERT_THROW(Dj_utils::read_into_graph(graph, inp3),GraphError);
 }
 TEST (Reading, RepeatedLines) {
     stringstream inp {"Moscow Novosibirsk 7\n"
                       "Moscow Krasnoyarsk 2\n"
                       "Moscow Novosibirsk 9"};
     Graph graph;
-    ASSERT_THROW(read_into_graph(graph, inp),GraphError);
+    ASSERT_THROW(Dj_utils::read_into_graph(graph, inp),GraphError);
 }
 TEST(Dijkstra, NoErrors) {
-    map <string, map <string, int>> graph = { {"Moscow",{
+    unordered_map<string, unordered_map<string, int>> graph = { {"Moscow",{
                                                                      {"Novosibirsk", 7},
                                                                      {"Krasnoyarsk", 2},
                                                                      {"Kiev", 9} } },
@@ -91,12 +91,12 @@ TEST(Dijkstra, NoErrors) {
     Graph G(graph);
     Dijkstra d;
     d.route(G, "Moscow");
-    map <string, int> check = {{"Kiev", 9},{"Krasnoyarsk", 2},{"Moscow", 0}, {"Novosibirsk", 7} };
+    unordered_map<string, int> check = {{"Kiev", 9},{"Krasnoyarsk", 2},{"Moscow", 0}, {"Novosibirsk", 7} };
     ASSERT_TRUE(check == d.getDistances());
 }
 
 TEST(Dijkstra, NoStart) {
-    map <string, map <string, int>> graph = { {"Moscow",{
+    unordered_map<string, unordered_map<string, int>> graph = { {"Moscow",{
                                                                 {"Novosibirsk", 7},
                                                                 {"Krasnoyarsk", 2},
                                                                 {"Kiev", 9} } },
@@ -110,7 +110,7 @@ TEST(Dijkstra, NoStart) {
 }
 
 TEST(Dijkstra, NoFinish) {
-    map <string, map <string, int>> graph = { {"Moscow",{
+    unordered_map<string, unordered_map<string, int>> graph = { {"Moscow",{
                                                                 {"Novosibirsk", 7},
                                                                 {"Krasnoyarsk", 2},
                                                                 {"Kiev", 9} } },
@@ -135,7 +135,7 @@ TEST(DijkAndReading, NoErrors) {
 
     Graph graph;
     Dijkstra D;
-    read_into_graph(graph, inp);
+    Dj_utils::read_into_graph(graph, inp);
     D.route(graph, "Moscow");
     ASSERT_EQ(D.getKilometres("Novosibirsk"), 7);
     ASSERT_EQ(D.getKilometres("Krasnoyarsk"), 9);
@@ -150,7 +150,7 @@ TEST(DijkAndReading, NoWay) {
                       "Moscow Krasnoyarsk 150"};
     Graph graph;
     Dijkstra D;
-    read_into_graph(graph,inp);
+    Dj_utils::read_into_graph(graph,inp);
     D.route(graph, "Monako");
     ASSERT_EQ(0, D.getKilometres("Moscow"));
     D.route(graph,"Moscow");
@@ -168,7 +168,7 @@ TEST(DijkAndReading, GetWay) {
                         "Krasnoyarsk Kiev 9\n"
                         "Kiev Omsk  6"};
     Graph graph;
-    read_into_graph(graph,inp);
+    Dj_utils::read_into_graph(graph,inp);
     Dijkstra D;
 
     D.route(graph, "Novosibirsk");
@@ -199,7 +199,7 @@ TEST(DijkAndReading, GetWayErrors) {
                       "Krasnoyarsk Kiev 9\n"
                       "Kiev Omsk  6"};
     Graph graph;
-    read_into_graph(graph,inp);
+    Dj_utils::read_into_graph(graph,inp);
     Dijkstra D;
     D.route(graph, "Novosibirsk");
     vector <string> way = D.getWay("Moscow");

@@ -20,7 +20,7 @@ int main(int argc, char*argv []) {
     }
     try {
         Graph g;
-        read_into_graph(g, inp);
+        Dj_utils::read_into_graph(g, inp);
         Dj_utils::showGraph(g.getStorage());
         string start = "Moscow";
         string finish = "Krasnoyarsk";
