@@ -21,14 +21,17 @@ public:
 
 
 class Dijkstra final{
-    std::string m_start;
+    std::string m_start; // not needed
     std::unordered_map<std::string,int> m_distances;
     std::unordered_map<std::string, std::string> m_prev;
 
 public:
+    //start & graph to getWay, route to private and try to decompose
     void route(const Graph& g, const std::string& start); // Dijkstra's algorithm
+    //test by getWay
     std::vector<std::string> getWay(const std::string& finish) const; // returns way from start to finish
 
+    // to private, exclude from tests
     int getKilometres(const std::string& finish); // distance from start to finish
 
     const std::unordered_map<std::string,int>& getDistances() const { return m_distances; }

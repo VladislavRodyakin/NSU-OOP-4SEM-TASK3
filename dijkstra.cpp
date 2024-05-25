@@ -20,7 +20,7 @@ void Dijkstra::route(const Graph &g, const std::string &start) {
         m_distances.clear();
         m_prev.clear();
     }
-   auto& graph = g.getStorage();
+   auto graph = g.getStorage();
 
     if(graph.empty()) {
         return;
