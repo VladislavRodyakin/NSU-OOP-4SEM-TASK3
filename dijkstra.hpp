@@ -9,34 +9,35 @@
 
 
 class Graph final{
-    std::unordered_map<std::string, std::unordered_map<std::string, int>> m_graph; // unordered maps
+    std::unordered_map<std::string, std::unordered_map<std::string, int>> m_graph;
 
 public:
     Graph() = default;
     explicit Graph(const std::unordered_map<std::string, std::unordered_map<std::string, int>>& graph): m_graph{graph} {};
     void insert(const std::string& name1, const std::string& name2, int val);
     
-    const std::unordered_map<std::string, std::unordered_map<std::string, int>>&  getStorage() const { return m_graph; }
+    const std::unordered_map<std::string, std::unordered_map<std::string, int>>  getStorage() const { return m_graph; }
 };
 
 
 class Dijkstra final{
-    std::string m_start; // not needed
-    std::unordered_map<std::string,int> m_distances;
-    std::unordered_map<std::string, std::string> m_prev;
+    void updateCityDistances(const std::string v, std::unordered_map<std::string, int>& distances,
+                        std::priority_queue <std::pair <int, std::string>>& queue,
+                        const std::unordered_map<std::string, std::unordered_map<std::string, int>>& graph,
+                        std::unordered_map<std::string, std::string>& prev)const;
+
+    void fillWay(const std::string start, std::unordered_map<std::string, int>& distances,
+            const std::unordered_map<std::string, std::unordered_map<std::string, int>>& graph,
+            std::unordered_map<std::string, std::string>& prev)const;
+
+    std::vector<std::string> findWay(const std::string& start, const std::string& finish,
+                                std::unordered_map<std::string, std::string>& prev)const;
 
 public:
-    //start & graph to getWay, route to private and try to decompose
-    void route(const Graph& g, const std::string& start); // Dijkstra's algorithm
-    //test by getWay
-    std::vector<std::string> getWay(const std::string& finish) const; // returns way from start to finish
+    std::vector<std::string> getWay(const Graph& g, const std::string& start, const std::string& finish) const;
 
-    // to private, exclude from tests
-    int getKilometres(const std::string& finish); // distance from start to finish
-
-    const std::unordered_map<std::string,int>& getDistances() const { return m_distances; }
-    const std::unordered_map<std::string, std::string>& getPrev() const { return m_prev; }
 };
+
 
 //let's try it
 class GraphError final: public std::exception {

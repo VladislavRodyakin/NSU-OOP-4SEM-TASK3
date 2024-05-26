@@ -13,25 +13,29 @@ void Graph::insert(const std::string& name1, const std::string& name2, int val) 
     m_graph[name2];
 }
 
-void Dijkstra::route(const Graph &g, const std::string &start) {
-    m_start = start;
-    const int Inf = std::numeric_limits<int>::max();
-    if(!m_distances.empty()) {
-        m_distances.clear();
-        m_prev.clear();
-    }
-   auto graph = g.getStorage();
+void Dijkstra::updateCityDistances(const std::string v, std::unordered_map<std::string, int>& distances,
+                        std::priority_queue <std::pair <int, std::string>>& queue,
+                        const std::unordered_map<std::string, std::unordered_map<std::string, int>>& graph,
+                        std::unordered_map<std::string, std::string>& prev) const{
 
-    if(graph.empty()) {
-        return;
+    auto v_it = graph.find(v);
+
+    for(const auto& city_roads : v_it->second) {
+        int length = city_roads.second;
+        std::string to = city_roads.first;
+
+        if((distances[to] > distances[v] + length) && length > 0) {
+            distances[to] = distances[v] + length;
+            prev[to] = v;
+            queue.push(make_pair(-distances[to],to));
+        }
     }
-    if(graph.count(start) == 0) {
-        return;
-    }
-    for(const auto& pair : graph) {
-        m_distances.insert({pair.first, Inf});
-    }
-    m_distances[start] = 0;
+}
+
+void Dijkstra::fillWay(const std::string start, std::unordered_map<std::string, int>& distances,
+            const std::unordered_map<std::string, std::unordered_map<std::string, int>>& graph,
+            std::unordered_map<std::string, std::string>& prev) const{
+
     std::priority_queue <std::pair <int, std::string>> queue;
     queue.push(make_pair(0,start));
     while (!queue.empty()) {
@@ -40,41 +44,60 @@ void Dijkstra::route(const Graph &g, const std::string &start) {
         int len = -queue.top().first;
         std::string v = queue.top().second;
         queue.pop();
-        if (len > m_distances[v]) {
+        if (len > distances[v]) {
             continue;
         }
 
-        auto v_it = graph.find(v);
-        for(const auto& city_roads : v_it->second) {
-            int length = city_roads.second;
-            std::string to = city_roads.first;
-            if((m_distances[to] > m_distances[v] + length) && length > 0) {
-                m_distances[to] = m_distances[v] + length;
-                m_prev[to] = v;
-                queue.push(make_pair(-m_distances[to],to));
-            }
-        }
+        updateCityDistances(v, distances, queue, graph, prev);
     }
 }
 
-int Dijkstra::getKilometres(const std::string &finish){
-    if(m_distances.count(finish)!=0) {
-        return m_distances[finish];
-    }
-    return 0;
-}
+std::vector<std::string> Dijkstra::findWay(const std::string& start, const std::string& finish,
+                                std::unordered_map<std::string, std::string>& prev) const{
 
- std::vector<std::string> Dijkstra::getWay(const std::string &finish) const {
-    auto connection = m_prev.find(finish);
+    auto connection = prev.find(finish);
     std::vector<std::string> Way;
-    if(connection == m_prev.end()) {
+
+    if(connection == prev.end()) {
         return Way;
     }
-    Way.push_back(m_start);
-    while(connection->second != m_start) {
+
+    Way.push_back(start);
+    while(connection->second != start) {
         Way.push_back(connection->second);
-        connection = m_prev.find(connection->second);
+        connection = prev.find(connection->second);
     }
+
     Way.push_back(finish);
     return Way;
+}
+
+
+std::vector<std::string> Dijkstra::getWay(const Graph& g, const std::string& start, const std::string& finish) const{
+    auto graph = g.getStorage();
+    if(graph.empty()) {
+        throw GraphError("Graph is empty");
+    }
+    if(graph.count(start) == 0) {
+        throw GraphError("Start city doesn't exist");
+    }
+    if(graph.count(finish) == 0) {
+        throw GraphError("Finish city doesn't exist");
+    }
+
+    std::unordered_map<std::string,int> distances;
+    std::unordered_map<std::string, std::string> prev;
+    const int Inf = std::numeric_limits<int>::max();
+    for(const auto& pair : graph) {
+        distances.insert({pair.first, Inf});
+    }
+    distances[start] = 0;
+
+    fillWay(start, distances, graph, prev);
+    
+    if (distances[finish] == Inf) {
+        throw GraphError("There is no way from start to finish");
+    }
+
+    return findWay(start, finish, prev);
 }

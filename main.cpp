@@ -25,10 +25,7 @@ int main(int argc, char*argv []) {
         string start = "Moscow";
         string finish = "Krasnoyarsk";
         Dijkstra d;
-        d.route(g, start);
-        Dj_utils::showDistance(d.getDistances());
-        Dj_utils::showPrev(d.getPrev());
-        Dj_utils::showWay(d.getWay(finish));
+        Dj_utils::showWay(d.getWay(g, start, finish));
     }
     catch(const GraphError& ex){
         cout << ex.what();
